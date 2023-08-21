@@ -1,10 +1,13 @@
 package com.picpaysimplificado.domain;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.picpaysimplificado.enums.TipoUsuario;
 
+import com.picpaysimplificado.exception.NegocioException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +15,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.springframework.validation.Validator;
+import util.ValidateUtil;
 
 @Entity
 public class Usuario {
@@ -123,6 +128,26 @@ public class Usuario {
 		return Objects.equals(id, other.id);
 	}
 	
-	
+	public void validar() throws NegocioException {
+		List<String> erros = new ArrayList<>();
+		if (ValidateUtil.isEmpty(nome)) {
+			erros.add("O usuário deve ter o nome preenchido.");
+		}
+		if (ValidateUtil.isEmpty(cpf)) {
+			erros.add("O usuário deve ter o CPF preenchido.");
+		}
+		if (ValidateUtil.isEmpty(email)) {
+			erros.add("O usuário deve ter o e-mail preenchido.");
+		}
+		if (ValidateUtil.isEmpty(senha)) {
+			erros.add("O usuário deve ter a senha preenchida.");
+		}
+		if (tipoUsuario != null) {
+			erros.add("O usuário deve ter o tipo preenchido.");
+		}
+		if (!erros.isEmpty()) {
+			throw new NegocioException(erros);
+		}
+	}
 
 }
