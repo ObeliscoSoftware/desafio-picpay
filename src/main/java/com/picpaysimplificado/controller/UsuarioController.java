@@ -16,50 +16,42 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.picpaysimplificado.domain.Usuario;
-import com.picpaysimplificado.repository.UsuarioRepository;
+import com.picpaysimplificado.exception.NegocioException;
+import com.picpaysimplificado.service.UsuarioService;
 
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 	
+	
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioService service;
 	
 	@GetMapping
 	public List<Usuario> listar() {
-		return usuarioRepository.findAll();
+		return service.listar();
 	}
 	
 	@GetMapping("/{usuarioId}")
 	public ResponseEntity<Usuario> buscar(@PathVariable Long usuarioId) {
-		return usuarioRepository.findById(usuarioId)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+		return service.buscar(usuarioId);
 	}
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Usuario adicionar(@RequestBody Usuario usuario) {
-		return usuarioRepository.save(usuario);
+	public void adicionar( @RequestBody Usuario usuario) throws NegocioException {
+		 service.cadastrarUsuario(usuario);
 	}
 	
 	@PutMapping("/{usuarioId}")
 	public ResponseEntity<Usuario> alterar(@PathVariable Long usuarioId, 
 			@RequestBody Usuario usuario){
-		if(!usuarioRepository.existsById(usuarioId)) {
-			return ResponseEntity.notFound().build();
-		}
-		usuario.setId(usuarioId);
-		return ResponseEntity.ok(usuarioRepository.save(usuario));
+		return service.alterar(usuarioId, usuario);
 	}
 	
 	@DeleteMapping("/{usuarioId}")
 	public ResponseEntity<Void> remover(@PathVariable Long usuarioId){
-		if(!usuarioRepository.existsById(usuarioId)) {
-			return ResponseEntity.notFound().build();
-		}
-		usuarioRepository.deleteById(usuarioId);
-		return ResponseEntity.noContent().build();
+		return service.remover(usuarioId);
 	}
 }

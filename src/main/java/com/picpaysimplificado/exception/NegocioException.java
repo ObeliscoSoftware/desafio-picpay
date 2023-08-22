@@ -15,4 +15,9 @@ public class NegocioException extends Exception {
         return mensagens;
     }
 
+	@Override
+	public String toString() {
+		return "NegocioException [mensagens=" + mensagens + "]";
+	}
+    
 }

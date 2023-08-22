@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
@@ -16,6 +21,16 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    public List<Usuario> listar(){
+    	return usuarioRepository.findAll();
+    }
+    public ResponseEntity<Usuario> buscar(Long usuarioId){
+    	return usuarioRepository.findById(usuarioId)
+		.map(ResponseEntity::ok)
+		.orElse(ResponseEntity.notFound().build());
+    }
+    
+    @Transactional
     public void cadastrarUsuario(Usuario usuario) throws NegocioException {
         usuario.validar();
         List<String> erros = new ArrayList<>();
@@ -31,5 +46,24 @@ public class UsuarioService {
             throw new NegocioException(erros);
         }
     }
+    
+    @Transactional
+    public ResponseEntity<Usuario> alterar(Long idUsuario, Usuario usuario){
+    	if(!usuarioRepository.existsById(idUsuario)) {
+			return ResponseEntity.notFound().build();
+		}
+		usuario.setId(idUsuario);
+		return ResponseEntity.ok(usuarioRepository.save(usuario));
+    }
+    
+    @Transactional
+    public ResponseEntity<Void> remover(Long usuarioId){
+    	if(!usuarioRepository.existsById(usuarioId)) {
+			return ResponseEntity.notFound().build();
+		}
+		usuarioRepository.deleteById(usuarioId);
+		return ResponseEntity.noContent().build();
+    }
+    
 
 }

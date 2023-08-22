@@ -142,7 +142,7 @@ public class Usuario {
 		if (ValidateUtil.isEmpty(senha)) {
 			erros.add("O usuário deve ter a senha preenchida.");
 		}
-		if (tipoUsuario != null) {
+		if (tipoUsuario == null) {
 			erros.add("O usuário deve ter o tipo preenchido.");
 		}
 		if (!erros.isEmpty()) {
